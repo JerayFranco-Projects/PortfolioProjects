@@ -17,136 +17,16 @@ SELECT Location, date, total_cases, new_cases, total_deaths, population
 FROM PortfolioProject.dbo.CovidDeaths
 order by 1,2
 
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET total_cases = NULL
-WHERE total_cases = '';
-
--- Replace 0 with NULL in total_cases
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET total_cases = NULL
-WHERE total_cases = 0;
-
--- Replace 0 with NULL in total_deaths
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET total_deaths = NULL
-WHERE total_deaths = 0;
-
--- Replace 0 with NULL in new_cases
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET new_cases = NULL
-WHERE new_cases = 0;
-
--- Replace 0 with NULL in new_deaths
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET new_deaths = NULL
-WHERE new_deaths = 0;
-
--- Replace 0 with NULL in population (optional, only if some rows have 0)
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET population = NULL
-WHERE population = 0;
-
-
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET total_deaths = NULL
-WHERE total_deaths = '';
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN new_cases FLOAT;
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN total_cases FLOAT;
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN total_deaths FLOAT;
-
-
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN total_cases FLOAT;
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN total_deaths FLOAT;
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN date DATE;
-
--- Convert empty total_cases to NULL
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET total_cases = NULL
-WHERE total_cases = '';
-
--- Convert empty population to NULL
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET population = NULL
-WHERE population = '';
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN total_cases FLOAT;
-
-ALTER TABLE PortfolioProject.dbo.CovidDeaths
-ALTER COLUMN population FLOAT;
-
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET Location = NULL
-WHERE Location = '';
-
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET Continent = NULL
-WHERE Continent = '';
-
-UPDATE PortfolioProject.dbo.CovidVaccinations
-SET new_vaccinations = NULL
-WHERE new_vaccinations = '';
-
-
-
-
-SELECT 
-    Location, 
-    Population, 
-    MAX(total_cases) AS HighestInfectionCount,
-    MAX(total_cases / NULLIF(Population,0) * 100) AS PercentPopulationInfected
-FROM PortfolioProject.dbo.CovidDeaths
-GROUP BY Location, Population
-ORDER BY PercentPopulationInfected;  -- smallest to largest
-
-
-
-
-
-
 
 -- Looking at Total Cases vs Total Deaths
 
 SELECT Location, date, total_cases, total_deaths, (Total_deaths/total_cases)
 FROM PortfolioProject.dbo.CovidDeaths
 order by 1,2
+    
 SELECT Location, date, total_cases, total_deaths, (total_deaths/total_cases) AS death_rate
 FROM PortfolioProject.dbo.CovidDeaths
 ORDER BY Location, date;
-
-SELECT 
-    Location, 
-    date, 
-    CASE WHEN total_cases = '' THEN NULL ELSE CAST(total_cases AS FLOAT) END AS total_cases_num,
-    CASE WHEN total_deaths = '' THEN NULL ELSE CAST(total_deaths AS FLOAT) END AS total_deaths_num,
-    CASE 
-        WHEN total_cases = '' OR total_deaths = '' THEN NULL
-        ELSE CAST(total_deaths AS FLOAT)/CAST(total_cases AS FLOAT)
-    END AS death_rate
-FROM PortfolioProject.dbo.CovidDeaths
-ORDER BY Location, date;
-
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET total_cases = NULL
-WHERE total_cases = '';
-
-UPDATE PortfolioProject.dbo.CovidDeaths
-SET total_deaths = NULL
-WHERE total_deaths = '';
-
-
 
 -- Looking at Total Cases vs Total Deaths
 
@@ -216,7 +96,7 @@ JOIN PortfolioProject..CovidVaccinations AS vac
 where dea.continent is not null
 order by 2,3
 
--- USE CTE FOR THIS PORTION
+--  CTE USE FOR THIS PORTION
 
 With PopvsVac (Continent, Location, Date, Population, New_Vaccination, RollingPeopleVaccinated)
 as 
@@ -272,4 +152,5 @@ JOIN PortfolioProject..CovidVaccinations AS vac
     ON dea.location = vac.location 
     and dea.date = vac.date
 where dea.continent is not null
+
 -- order by 2,3
