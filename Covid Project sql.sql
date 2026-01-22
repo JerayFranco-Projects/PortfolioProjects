@@ -60,13 +60,12 @@ WHERE continent is not null
 Group by Location
 order by TotalDeathCount desc
 
-
-
+    
 
 -- LET'S BREAK THINGS DOWN BY CONTINENT
-
 -- Showing continents with the highest death count per population
 
+    
 SELECT continent, MAX(cast(Total_deaths as int)) AS TotalDeathCount
 FROM PortfolioProject.dbo.CovidDeaths
 -- WHERE location LIKE '%states%'
@@ -85,6 +84,7 @@ ORDER BY 1,2
 
 
 -- Looking at Total Population vs Vaccinations
+-- Using Join function
 
 Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
     SUM(Cast(vac.new_vaccinations as int)) OVER (Partition by dea.location ORDER by dea.location, dea.Date)
@@ -154,3 +154,4 @@ JOIN PortfolioProject..CovidVaccinations AS vac
 where dea.continent is not null
 
 -- order by 2,3
+
