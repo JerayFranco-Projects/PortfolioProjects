@@ -1,17 +1,17 @@
-SELECT *
-FROM PortfolioProject.dbo.CovidDeaths
+/*
+Covid 19 Data Exploration 
+
+Skills used: Joins, CTE's, Temp Tables, Windows Functions, Aggregate Functions, Creating Views, Converting Data Types
+
+*/    
 
 SELECT *
 FROM PortfolioProject.dbo.CovidDeaths
 WHERE continent is not null
 ORDER BY 3,4
 
-
-SELECT *
-FROM PortfolioProject.dbo.CovidVaccinations
-ORDER BY 3,4
-
---Select data
+    
+--Select data that we will be starting with
 
 SELECT Location, date, total_cases, new_cases, total_deaths, population
 FROM PortfolioProject.dbo.CovidDeaths
@@ -19,31 +19,23 @@ order by 1,2
 
 
 -- Looking at Total Cases vs Total Deaths
-
-SELECT Location, date, total_cases, total_deaths, (Total_deaths/total_cases)
-FROM PortfolioProject.dbo.CovidDeaths
-order by 1,2
-    
-SELECT Location, date, total_cases, total_deaths, (total_deaths/total_cases) AS death_rate
-FROM PortfolioProject.dbo.CovidDeaths
-ORDER BY Location, date;
-
--- Looking at Total Cases vs Total Deaths
+-- Shows liklihood of dying if you contract covid in your country
 
 SELECT Location, date, total_cases, total_deaths, (Total_deaths/total_cases)*100 AS DeathPercentage
 FROM PortfolioProject.dbo.CovidDeaths
 WHERE location LIKE '%states%'
-ORDER BY DeathPercentage ASC, date ASC;
+and continent is not null
+ORDER BY 1,2;
 
 -- Looking at Total Cases vs Population
--- Shows what percentage of population got Covid
+-- Shows what percentage of population got infected with Covid
 
 SELECT Location, date, Population, total_cases, (Total_cases/population)*100 AS PercentPopulationInfected
 FROM PortfolioProject.dbo.CovidDeaths
 WHERE location LIKE '%states%'
 order by 1,2
 
--- Looking at Countries with Highest Infection Rate compared to Population
+-- Countries with Highest Infection Rate compared to Population
 
 SELECT Location, Population, MAX(total_cases) AS HighestInfectionCount, MAX((Total_cases/population))* 100 AS PercentPopulationInfected
 FROM PortfolioProject.dbo.CovidDeaths
@@ -51,7 +43,7 @@ FROM PortfolioProject.dbo.CovidDeaths
 Group by Location, Population
 order by PercentPopulationInfected desc
 
--- Showing the Countries with the Highest Death Count per Population
+-- Countries with Highest Death Count per Population
 
 SELECT Location, MAX(cast(Total_deaths as int)) AS TotalDeathCount
 FROM PortfolioProject.dbo.CovidDeaths
@@ -85,6 +77,7 @@ ORDER BY 1,2
 
 -- Looking at Total Population vs Vaccinations
 -- Using Join function
+-- Shows Percentage of Population that has recieved at least on Covid Vaccine
 
 Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
     SUM(Cast(vac.new_vaccinations as int)) OVER (Partition by dea.location ORDER by dea.location, dea.Date)
@@ -96,7 +89,7 @@ JOIN PortfolioProject..CovidVaccinations AS vac
 where dea.continent is not null
 order by 2,3
 
---  CTE USE FOR THIS PORTION
+--  Using CTE to perform Calculation on Partition By in previous query
 
 With PopvsVac (Continent, Location, Date, Population, New_Vaccination, RollingPeopleVaccinated)
 as 
@@ -115,7 +108,7 @@ Select *, (RollingPeopleVaccinated/Population)*100 as GrandTotal
 From PopvsVac
 
 
--- CREATING A TEMP TABLE INSTEAD OF CTE
+-- Using Temp Table to perform Calculation on Partition By in previous query
 
 DROP TABLE if exists #PercentPopulationVaccinated
 Create Table #PercentPopulationVaccinated
@@ -153,5 +146,4 @@ JOIN PortfolioProject..CovidVaccinations AS vac
     and dea.date = vac.date
 where dea.continent is not null
 
--- order by 2,3
 
