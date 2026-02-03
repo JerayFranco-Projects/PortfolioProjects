@@ -15,7 +15,9 @@ From PortfolioProject.dbo.NashvilleHousing
 Select SaleDateConverted, CONVERT(Date,SaleDate)
 From PortfolioProject.dbo.NashvilleHousing
 
-
+	
+-- If it doesn't update properly
+	
 Update NashvilleHousing
 Set SaleDate = CONVERT(Date,SaleDate)
 
@@ -196,4 +198,5 @@ ALTER TABLE PortfolioProject.dbo.NashvilleHousing
 DROP COLUMN  OwnerAddress, TaxDistrict, PropertyAddress
 
 ALTER TABLE PortfolioProject.dbo.NashvilleHousing
+
 DROP COLUMN  SaleDate
